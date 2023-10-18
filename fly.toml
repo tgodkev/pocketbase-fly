@@ -1,41 +1,27 @@
-# fly.toml file generated for jr-pocketbase on 2023-02-18T15:32:19-05:00
+# fly.toml app configuration file generated for snowy-tree-8913 on 2023-07-28T20:49:19+03:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
 
 app = "jr-pocketbase"
-kill_signal = "SIGINT"
-kill_timeout = 300
-processes = []
-
-[env]
-
-[experimental]
-  auto_rollback = true
+primary_region = "ams"
 
 [mounts]
+  source = "pb_data" # name of the volume
   destination = "/pb/pb_data"
-  source = "pb_data"
 
-[[services]]
-  http_checks = []
+# optional if you want to change the PocketBase version
+[build.args]
+  PB_VERSION="0.19.0"
+
+[http_service]
   internal_port = 8080
+  force_https = true
+  auto_stop_machines = false
+  auto_start_machines = true
+  min_machines_running = 1
   processes = ["app"]
-  protocol = "tcp"
-  script_checks = []
-  [services.concurrency]
-    hard_limit = 25
-    soft_limit = 20
-    type = "connections"
-
-  [[services.ports]]
-    force_https = true
-    handlers = ["http"]
-    port = 80
-
-  [[services.ports]]
-    handlers = ["tls", "http"]
-    port = 443
-
-  [[services.tcp_checks]]
-    grace_period = "5s"
-    interval = "15s"
-    restart_limit = 0
-    timeout = "10s"
+  [http_service.concurrency]
+    type = "requests"
+    soft_limit = 500
+    hard_limit = 550
